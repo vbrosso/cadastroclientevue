@@ -14,7 +14,7 @@ Siga estas etapas para instalar e executar o projeto localmente:
 git clone https://github.com/seu-usuario/cadastro-clientes-vue.git
 
 #2. Instale as dependências do projeto:
-npm install
+```npm install
 
 #3. Execute o projeto com:
-npm run serve
+```npm run serve
