@@ -27,10 +27,6 @@
           <div class="form-group">
             <input type="text" class="form-control" v-model="produto.nome" placeholder="Nome do Produto" autofocus>
           </div>
-          <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="produtoAtivo" v-model="produto.ativo">
-            <label class="form-check-label" for="produtoAtivo">Ativo</label>
-          </div>
           <button class="btn btn-primary mt-2" @click="cadastrarProduto">Cadastrar Produto</button>
         </div>
 
@@ -48,10 +44,6 @@
           </div>
           <div class="form-group">
             <input type="text" class="form-control" v-model="cliente.email" placeholder="E-mail">
-          </div>
-          <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="clienteAtivo" v-model="cliente.ativo">
-            <label class="form-check-label" for="clienteAtivo">Ativo</label>
           </div>
           <button class="btn btn-primary mt-2" @click="cadastrarCliente">Cadastrar Cliente</button>
         </div>
@@ -131,6 +123,18 @@ export default {
   },
   methods: {
     cadastrarCliente() {
+      // Validando campos
+      if (!this.cliente.nome || !this.cliente.documento || !this.cliente.telefone || !this.cliente.email) {
+        window.alert('Por favor, preencha todos os campos do formulário.');
+        return;
+      }
+
+      // Simulando validação de e-mail
+      if (!this.validarEmail(this.cliente.email)) {
+        window.alert('Por favor, insira um e-mail válido.');
+        return;
+      }
+
       this.clientes.push({ ...this.cliente });
       this.cliente = {
         nome: '',
@@ -139,13 +143,25 @@ export default {
         email: '',
         ativo: true
       };
+
+      // Alerta de sucesso
+      window.alert('Cliente cadastrado com sucesso!');
     },
     cadastrarProduto() {
+      // Validando campos
+      if (!this.produto.nome) {
+        window.alert('Por favor, preencha o nome do produto.');
+        return;
+      }
+
       this.produtos.push({ ...this.produto });
       this.produto = {
         nome: '',
         ativo: true
       };
+
+      // Alerta de sucesso
+      window.alert('Produto cadastrado com sucesso!');
     },
     associarProduto() {
       if (this.clienteSelecionado && this.produtoSelecionado) {
@@ -166,11 +182,24 @@ export default {
     },
     ativarInativarProduto(produto) {
       produto.ativo = !produto.ativo;
+    },
+    validarEmail(email) {
+      // Regex simples para validar o formato do e-mail
+      const regex = /\S+@\S+\.\S+/;
+      return regex.test(email);
     }
   }
 };
 </script>
 
 <style>
-/* CSS CUSTOM */
+#myTabContent .form-group{
+  margin: 10px 0;
+}
+#myTab li{
+  cursor: pointer;
+}
+.list-group button{
+  margin-right: 3px;
+}
 </style>
