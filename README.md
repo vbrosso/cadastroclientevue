@@ -17,4 +17,5 @@ git clone https://github.com/seu-usuario/cadastro-clientes-vue.git
 ```npm install
 
 #3. Execute o projeto com:
+
 ```npm run serve
