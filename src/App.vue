@@ -282,7 +282,12 @@ export default {
     associarProduto() {
       if (this.clienteSelecionado && this.produtoSelecionado) {
         // Implementar a logica para endpoint
-        console.log(`Associando produto ${this.produtoSelecionado.nome} ao cliente ${this.clienteSelecionado.nome}`);
+        console.log(``);
+        this.$swal({
+          icon: 'success',
+          title: 'Feito!',
+          text: 'Associado produto: '+ this.produtoSelecionado.nome + ' ao cliente: ' + this.clienteSelecionado.nome,
+       });
       }
     },
     editarCliente(cliente) {
