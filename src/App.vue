@@ -23,7 +23,7 @@
         <!-- Conteúdo da aba de cadastro -->
         <!-- Cadastro de Produtos -->
         <div class="mb-4">
-          <h2>Cadastro de Produtos</h2>
+          <h2><i class="fas fa-shopping-cart"></i>Cadastro de Produtos</h2>
           <div class="form-group">
             <input type="text" class="form-control" v-model="produto.nome" placeholder="Nome do Produto" autofocus>
           </div>
@@ -32,7 +32,7 @@
 
         <!-- Cadastro de Clientes -->
         <div class="mb-4">
-          <h2>Cadastro de Clientes</h2>
+          <h2><i class="fas fa-user"></i>Cadastro de Clientes</h2>
           <div class="form-group">
             <input type="text" class="form-control" v-model="cliente.nome" placeholder="Nome do Cliente">
           </div>
@@ -54,7 +54,7 @@
         <!-- Conteúdo da aba de edição -->
         <!-- Associação de Produtos -->
         <div class="mb-4">
-          <h2>Associação de Produtos</h2>
+          <h2><i class="fas fa-exchange-alt"></i>Associação de Produtos</h2>
           <div class="form-group">
             <select class="form-control" v-model="clienteSelecionado">
               <option v-for="(cliente, index) in clientes" :value="cliente" :key="index">{{ cliente.nome }}</option>
@@ -70,11 +70,12 @@
 
         <!-- Listagem de Produtos -->
         <div class="mb-4">
-          <h2>Listagem de Produtos</h2>
+          <h2><i class="fas fa-list"></i>Listagem de Produtos</h2>
           <ul class="list-group">
             <li class="list-group-item" v-for="produto in produtos" :key="produto.id">
               {{ produto.nome }} - {{ produto.ativo ? 'Ativo' : 'Inativo' }}
-              <button class="btn btn-sm btn-primary" @click="editarProduto(produto)">Editar</button>
+              <!-- Mudança do botão para Excluir -->
+              <button class="btn btn-sm btn-danger" @click="removerProduto(produto)">Excluir</button>
               <button class="btn btn-sm btn-secondary" @click="ativarInativarProduto(produto)">{{ produto.ativo ? 'Inativar' : 'Ativar' }}</button>
             </li>
           </ul>
@@ -82,13 +83,12 @@
 
         <!-- Listagem de Clientes -->
         <div>
-          <h2>Listagem de Clientes</h2>
+          <h2><i class="fas fa-user"></i>Listagem de Clientes</h2>
           <ul class="list-group">
             <li class="list-group-item" v-for="cliente in clientes" :key="cliente.id">
               {{ cliente.nome }} - {{ cliente.ativo ? 'Ativo' : 'Inativo' }}
-              <button class="btn btn-sm btn-primary" @click="editarCliente(cliente)">Editar</button>
+              <button class="btn btn-sm btn-danger" @click="removerCliente(cliente)">Excluir</button>
               <button class="btn btn-sm btn-secondary" @click="ativarInativarCliente(cliente)">{{ cliente.ativo ? 'Inativar' : 'Ativar' }}</button>
-              <button class="btn btn-sm btn-info" @click="associarProduto(cliente)">Associar Produtos</button>
             </li>
           </ul>
         </div>
@@ -163,9 +163,23 @@ export default {
       // Alerta de sucesso
       window.alert('Produto cadastrado com sucesso!');
     },
+    removerProduto(produto) {
+      const index = this.produtos.indexOf(produto);
+      if (index !== -1) {
+        this.produtos.splice(index, 1);
+        window.alert('Produto removido com sucesso!');
+      }
+    },
+        removerCliente(cliente) {
+      const index = this.clientes.indexOf(cliente);
+      if (index !== -1) {
+        this.clientes.splice(index, 1);
+        window.alert('Cliente removido com sucesso!');
+      }
+    },
     associarProduto() {
       if (this.clienteSelecionado && this.produtoSelecionado) {
-        // Implemente a lógica de associação aqui
+        // Implementar a logica para endpoint
         console.log(`Associando produto ${this.produtoSelecionado.nome} ao cliente ${this.clienteSelecionado.nome}`);
       }
     },
@@ -192,14 +206,29 @@ export default {
 };
 </script>
 
-<style>
-#myTabContent .form-group{
-  margin: 10px 0;
+<style lang="scss" scoped>
+
+body{
+  #myTabContent .form-group{
+    margin: 10px 0;
+  }
+
+  #myTab{
+    margin-bottom: 20px;
+    li{
+      cursor: pointer;
+    }
+  }
+  .list-group button{
+    margin-right: 3px;
+  }
+  h2{
+    margin-bottom: 12px;
+    i{
+      font-size: 20px;
+      margin-right: 8px;
+    }
+  }
 }
-#myTab li{
-  cursor: pointer;
-}
-.list-group button{
-  margin-right: 3px;
-}
+
 </style>
