@@ -37,10 +37,20 @@
             <input type="text" class="form-control" v-model="cliente.nome" placeholder="Nome do Cliente">
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" v-model="cliente.documento" placeholder="Documento">
+            <input type="text" class="form-control" v-model="cliente.documento" placeholder="CPF" >
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" v-model="cliente.telefone" placeholder="Telefone">
+            <input type="text" 
+            class="form-control" 
+            v-mask="phoneMask" 
+            :class="{'is-invalid': !isPhoneValid && phoneNumberTouched}" 
+            @blur="phoneNumberTouched = true"
+            placeholder="Telefone" 
+            v-model="cliente.telefone
+            ">
+            <div v-if="!isPhoneValid && phoneNumberTouched" class="invalid-feedback">
+            Por favor, insira um número de telefone válido.
+          </div>
           </div>
           <div class="form-group">
             <input type="text" class="form-control" v-model="cliente.email" placeholder="E-mail">
@@ -106,6 +116,7 @@ export default {
         nome: '',
         documento: '',
         telefone: '',
+        phoneNumberTouched: false, // Estado para verificar se o input foi tocado
         email: '',
         ativo: true
       },
@@ -121,31 +132,48 @@ export default {
       currentTab: 'cadastro'
     };
   },
+  computed:{
+    //mask phone
+    phoneMask() {
+      const digits = this.cliente.telefone.replace(/\D+/g, '');
+      return digits.length <= 10 ? '(##) ####-####' : '(##) #####-####';
+    },
+    isPhoneValid() {
+      const digits = this.cliente.telefone.replace(/\D+/g, '');
+      // Verifica se o número atende ao comprimento mínimo para telefones fixos e móveis
+      return digits.length === 10 || digits.length === 11;
+    }
+  },
   methods: {
     cadastrarCliente() {
-      // Validando campos
-      if (!this.cliente.nome || !this.cliente.documento || !this.cliente.telefone || !this.cliente.email) {
-        window.alert('Por favor, preencha todos os campos do formulário.');
-        return;
-      }
+      
+    // verificação de toque no campo do telefone
+    this.phoneNumberTouched = true;
 
-      // Simulando validação de e-mail
-      if (!this.validarEmail(this.cliente.email)) {
-        window.alert('Por favor, insira um e-mail válido.');
-        return;
-      }
+    // Validando campos, incluindo a validação do número de telefone
+    if (!this.cliente.nome || !this.cliente.documento || !this.cliente.telefone || !this.cliente.email || !this.isPhoneValid) {
+      window.alert('Por favor, preencha todos os campos do formulário corretamente.');
+      return;
+    }
 
-      this.clientes.push({ ...this.cliente });
-      this.cliente = {
-        nome: '',
-        documento: '',
-        telefone: '',
-        email: '',
-        ativo: true
-      };
+    // Simulando validação de e-mail
+    if (!this.validarEmail(this.cliente.email)) {
+      window.alert('Por favor, insira um e-mail válido.');
+      return;
+    }
 
-      // Alerta de sucesso
-      window.alert('Cliente cadastrado com sucesso!');
+    // Aqui você pode incluir a lógica para efetivamente cadastrar o cliente...
+    this.clientes.push({ ...this.cliente });
+    this.cliente = {
+      nome: '',
+      documento: '',
+      telefone: '',
+      email: '',
+      ativo: true
+    };
+
+    // Alerta de sucesso
+    window.alert('Cliente cadastrado com sucesso!');
     },
     cadastrarProduto() {
       // Validando campos
