@@ -37,7 +37,18 @@
             <input type="text" class="form-control" v-model="cliente.nome" placeholder="Nome do Cliente">
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" v-model="cliente.documento" placeholder="CPF" >
+            <input 
+            type="text" 
+            v-mask="'###.###.###-##'" 
+            class="form-control"
+            :class="{'is-invalid': !isCPFValid && cpfTouched}" 
+            @blur="cpfTouched = true" 
+            v-model="cliente.documento" 
+            placeholder="CPF" 
+            >
+            <div v-if="!isCPFValid && cpfTouched" class="invalid-feedback">
+              Por favor, insira um CPF válido.
+            </div>
           </div>
           <div class="form-group">
             <input type="text" 
@@ -120,6 +131,7 @@ export default {
         email: '',
         ativo: true
       },
+      cpfTouched: false, // Estado para verificar se o input foi tocado
       produto: {
         nome: '',
         ativo: true
@@ -142,6 +154,33 @@ export default {
       const digits = this.cliente.telefone.replace(/\D+/g, '');
       // Verifica se o número atende ao comprimento mínimo para telefones fixos e móveis
       return digits.length === 10 || digits.length === 11;
+    },
+    isCPFValid() {
+      const cpf = this.cliente.documento.replace(/\D+/g, '');
+      if (cpf.length !== 11) return false;
+
+      // Algoritmo de validação de CPF
+      let sum = 0;
+      let remainder;
+
+      for (let i = 1; i <= 9; i++) {
+        sum += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+      }
+      remainder = (sum * 10) % 11;
+
+      if ((remainder === 10) || (remainder === 11)) remainder = 0;
+      if (remainder !== parseInt(cpf.substring(9, 10))) return false;
+
+      sum = 0;
+      for (let i = 1; i <= 10; i++) {
+        sum += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+      }
+      remainder = (sum * 10) % 11;
+
+      if ((remainder === 10) || (remainder === 11)) remainder = 0;
+      if (remainder !== parseInt(cpf.substring(10, 11))) return false;
+
+      return true;
     }
   },
   methods: {
@@ -151,18 +190,33 @@ export default {
     this.phoneNumberTouched = true;
 
     // Validando campos, incluindo a validação do número de telefone
-    if (!this.cliente.nome || !this.cliente.documento || !this.cliente.telefone || !this.cliente.email || !this.isPhoneValid) {
-      window.alert('Por favor, preencha todos os campos do formulário corretamente.');
+    if (!this.cliente.nome || !this.cliente.documento || !this.cliente.telefone || !this.cliente.email || !this.isPhoneValid ||!this.isCPFValid) {
+      this.$swal({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Por favor, preencha todos os campos do formulário corretamente.',
+      });
       return;
     }
+
+    //Limpar campos
+    this.cliente.documento = '';
+    this.cliente.telefone = '';
+    // Limpar outros campos do formulário, se houver
+    this.cpfTouched = false;
+    this.phoneNumberTouched = false;
 
     // Simulando validação de e-mail
     if (!this.validarEmail(this.cliente.email)) {
-      window.alert('Por favor, insira um e-mail válido.');
+      this.$swal({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Por favor, insira um e-mail válido.',
+      });
       return;
     }
 
-    // Aqui você pode incluir a lógica para efetivamente cadastrar o cliente...
+    // Cadastro cliente
     this.clientes.push({ ...this.cliente });
     this.cliente = {
       nome: '',
@@ -173,12 +227,20 @@ export default {
     };
 
     // Alerta de sucesso
-    window.alert('Cliente cadastrado com sucesso!');
+      this.$swal({
+        icon: 'success',
+        title: 'Feito!',
+        text: 'Cliente cadastrado com sucesso!',
+      });
     },
     cadastrarProduto() {
       // Validando campos
       if (!this.produto.nome) {
-        window.alert('Por favor, preencha o nome do produto.');
+        this.$swal({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Por favor, preencha o nome do produto.',
+      });
         return;
       }
 
@@ -189,20 +251,32 @@ export default {
       };
 
       // Alerta de sucesso
-      window.alert('Produto cadastrado com sucesso!');
+      this.$swal({
+        icon: 'success',
+        title: 'Feito!',
+        text: 'Produto cadastrado com sucesso!',
+      });
     },
     removerProduto(produto) {
       const index = this.produtos.indexOf(produto);
       if (index !== -1) {
         this.produtos.splice(index, 1);
-        window.alert('Produto removido com sucesso!');
+        this.$swal({
+          icon: 'success',
+          title: 'Feito!',
+          text: 'Produto removido com sucesso!',
+       });
       }
     },
         removerCliente(cliente) {
       const index = this.clientes.indexOf(cliente);
       if (index !== -1) {
         this.clientes.splice(index, 1);
-        window.alert('Cliente removido com sucesso!');
+        this.$swal({
+          icon: 'success',
+          title: 'Feito!',
+          text: 'Cliente removido com sucesso!',
+       });
       }
     },
     associarProduto() {
